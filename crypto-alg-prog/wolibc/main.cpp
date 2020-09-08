@@ -34,6 +34,7 @@ ssize_t write_num(int fd, Integer num)
     {
         chars[0] = '0';
         chars[1] = '\0';
+        digits_count = 1;
         goto print;
     }
 
