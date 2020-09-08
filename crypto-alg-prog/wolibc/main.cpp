@@ -81,12 +81,9 @@ ssize_t print(const char* str)
 
 void print_results(ssize_t value, ssize_t correct)
 {
-    const char* got = "Got ";
-    const char* expected = ", expected ";
-
-    print(got);
+    print("Got ");
     print_num<ssize_t>(value);
-    print(expected);
+    print(", expected ");
     print_num<ssize_t>(correct);
     print("\n");
 }
@@ -100,8 +97,7 @@ int main()
     ssize_t r2 = print(wolibc);
     ssize_t r3 = mywrite(5, "X\n", 2); // 5 is a bad fd, an error will occur
 
-    const char* results = "Results:\n";
-    print(results);
+    print("Results:\n");
 
     print_results(r1, mystrlen(hello));
     print_results(r2, mystrlen(wolibc));
