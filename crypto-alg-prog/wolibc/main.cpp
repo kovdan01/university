@@ -68,16 +68,27 @@ ssize_t write_num(int fd, Integer num)
     return mywrite(fd, chars, digits_count + negative);
 }
 
+template <typename Integer>
+ssize_t print_num(Integer num)
+{
+    return write_num(STDOUT, num);
+}
+
+ssize_t print(const char* str)
+{
+    return mywrite(STDOUT, str, mystrlen(str));
+}
+
 void print_results(ssize_t value, ssize_t correct)
 {
     const char* got = "Got ";
     const char* expected = ", expected ";
 
-    mywrite(STDOUT, got, mystrlen(got));
-    write_num<ssize_t>(STDOUT, value);
-    mywrite(STDOUT, expected, mystrlen(expected));
-    write_num<ssize_t>(STDOUT, correct);
-    mywrite(STDOUT, "\n", 1);
+    print(got);
+    print_num<ssize_t>(value);
+    print(expected);
+    print_num<ssize_t>(correct);
+    print("\n");
 }
 
 int main()
@@ -85,12 +96,12 @@ int main()
     const char* hello = "Hello ";
     const char* wolibc = "without libc!\n";
 
-    ssize_t r1 = mywrite(STDOUT, hello, mystrlen(hello));
-    ssize_t r2 = mywrite(STDOUT, wolibc, mystrlen(wolibc));
+    ssize_t r1 = print(hello);
+    ssize_t r2 = print(wolibc);
     ssize_t r3 = mywrite(5, "X\n", 2); // 5 is a bad fd, an error will occur
 
     const char* results = "Results:\n";
-    mywrite(STDOUT, results, mystrlen(results));
+    print(results);
 
     print_results(r1, mystrlen(hello));
     print_results(r2, mystrlen(wolibc));
