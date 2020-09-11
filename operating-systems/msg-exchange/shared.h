@@ -18,6 +18,8 @@ struct msgbuf_t
     unsigned char mtext[MSGSZ];
 };
 
+int create_or_open_mq();
+
 std::string capture_cmd_out(const std::string& cmd);
 
 template <typename T>

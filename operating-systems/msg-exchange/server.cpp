@@ -24,17 +24,34 @@
 
 #include <sys/msg.h>
 
-int open_mq()
+std::vector<pri_t> rcv_priorities(int mq_id)
 {
-    key_t key = get_key();
-    int mq_id = ::msgget(key, 0400);
-    if (mq_id == -1)
+    msgbuf_t msg1;
+    if (::msgrcv(mq_id, &msg1, sizeof(std::size_t), 1, 0) == -1)
     {
-        std::perror("MQ open error: ");
-        std::exit(2);
+        std::perror("msgrcv error: ");
+        std::exit(3);
     }
+    std::size_t priorities_count = read_data<std::size_t>(msg1.mtext);
 
-    return mq_id;
+    msgbuf_t msg2;
+    if (::msgrcv(mq_id, &msg2, priorities_count * sizeof(pri_t), 2, 0) == -1)
+    {
+        std::perror("msgrcv error: ");
+        std::exit(3);
+    }
+    std::vector<pri_t> priorities;
+    for (std::size_t i = 0; i < priorities_count; ++i)
+        priorities.emplace_back(read_data<pri_t>(msg2.mtext + sizeof(pri_t) * i));
+
+    std::cout << "Processes count: " << priorities_count << ", priorities: " << std::endl;
+    for (pri_t pri : priorities)
+        std::cout << pri << ' ';
+    std::cout << std::endl;
+
+    assert(priorities_count != 0);
+
+    return priorities;
 }
 
 void print_max_pri_info(pri_t max_pri)
@@ -68,41 +85,8 @@ void print_max_pri_info(pri_t max_pri)
     std::cout << "Process with max PRI = " << max_pri << ": PID = " << procs.front().pid << ", USER = " << procs.front().user << std::endl;
 }
 
-int main()
+void print_last_msg_time(int mq_id)
 {
-    std::cout << "SERVER" << std::endl;
-
-    int mq_id = open_mq();
-
-    msgbuf_t msg1;
-    if (::msgrcv(mq_id, &msg1, sizeof(std::size_t), 1, 0) == -1)
-    {
-        std::perror("msgrcv error: ");
-        std::exit(3);
-    }
-    std::size_t priorities_count = read_data<std::size_t>(msg1.mtext);
-
-    msgbuf_t msg2;
-    if (::msgrcv(mq_id, &msg2, priorities_count * sizeof(pri_t), 2, 0) == -1)
-    {
-        std::perror("msgrcv error: ");
-        std::exit(3);
-    }
-    std::vector<pri_t> priorities;
-    for (std::size_t i = 0; i < priorities_count; ++i)
-        priorities.emplace_back(read_data<pri_t>(msg2.mtext + sizeof(pri_t) * i));
-
-    std::cout << "Processes count: " << priorities_count << ", priorities: " << std::endl;
-    for (pri_t pri : priorities)
-        std::cout << pri << ' ';
-    std::cout << std::endl;
-
-    assert(priorities_count != 0);
-
-    std::sort(priorities.begin(), priorities.end());
-    pri_t max_pri = priorities.front();
-    print_max_pri_info(max_pri);
-
     msqid_ds mq_struct;
     if (::msgctl(mq_id, IPC_STAT, &mq_struct) == -1)
     {
@@ -111,10 +95,30 @@ int main()
     }
     std::time_t unix_time = mq_struct.msg_stime;
     std::cout << "Last msgsnd time: " << std::put_time(std::localtime(&unix_time), "%c %Z") << std::endl;
+}
 
+void delete_mq(int mq_id)
+{
     if (::msgctl(mq_id, IPC_RMID, nullptr) == -1)
     {
         std::perror("msgctl delete mq error: ");
         std::exit(5);
     }
+}
+
+int main()
+{
+    std::cout << "SERVER" << std::endl;
+
+    int mq_id = create_or_open_mq();
+
+    std::vector<pri_t> priorities = rcv_priorities(mq_id);
+
+    std::sort(priorities.begin(), priorities.end());
+    pri_t max_pri = priorities.front();
+    print_max_pri_info(max_pri);
+
+    print_last_msg_time(mq_id);
+
+    delete_mq(mq_id);
 }

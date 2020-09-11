@@ -2,6 +2,7 @@
 
 #include <sys/types.h>
 #include <sys/ipc.h>
+#include <sys/msg.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -39,4 +40,17 @@ std::string capture_cmd_out(const std::string& cmd)
         ::pclose(stream);
     }
     return data;
+}
+
+int create_or_open_mq()
+{
+    key_t key = get_key();
+    int mq_id = ::msgget(key, IPC_CREAT | 0666);
+    if (mq_id == -1)
+    {
+        std::perror("MQ creation or open error: ");
+        std::exit(2);
+    }
+
+    return mq_id;
 }
