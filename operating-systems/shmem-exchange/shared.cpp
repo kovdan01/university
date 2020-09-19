@@ -1,7 +1,9 @@
 #include "shared.h"
 
 #include <sys/ipc.h>
+#include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -10,18 +12,29 @@
 #include <array>
 
 constexpr int PROJECT_ID = 8888;
-const std::string PATH = "/tmp/lab_shmem";
+const std::string PATH_MEM = "/tmp/lab_shmem_mem";
+const std::string PATH_SEM = "/tmp/lab_shmem_sem";
 
-key_t get_key()
+key_t get_key_impl(const std::string& path)
 {
-    std::system(("touch " + PATH).c_str());
-    key_t key = ::ftok(PATH.c_str(), PROJECT_ID);
+    ::creat(path.c_str(), 0600);
+    key_t key = ::ftok(path.c_str(), PROJECT_ID);
     if (key == -1)
     {
         std::perror("Cannot get a key with ftok");
         throw std::runtime_error("Cannot get a key with ftok");
     }
     return key;
+}
+
+key_t get_key_mem()
+{
+    return get_key_impl(PATH_MEM);
+}
+
+key_t get_key_sem()
+{
+    return get_key_impl(PATH_SEM);
 }
 
 std::string capture_cmd_out(const std::string& cmd)
@@ -45,7 +58,7 @@ std::string capture_cmd_out(const std::string& cmd)
 
 int create_shmem()
 {
-    key_t key = get_key();
+    key_t key = get_key_mem();
     int shm_id = ::shmget(key, SHMEM_SIZE, IPC_CREAT | IPC_EXCL | 0666);
     if (shm_id == -1)
     {
@@ -58,7 +71,7 @@ int create_shmem()
 
 int open_shmem()
 {
-    key_t key = get_key();
+    key_t key = get_key_mem();
     int shm_id = ::shmget(key, SHMEM_SIZE, 0666);
     while (shm_id == -1)
     {
@@ -71,7 +84,7 @@ int open_shmem()
 
 int create_sem()
 {
-    key_t key = get_key();
+    key_t key = get_key_sem();
     int sem_id = ::semget(key, 1, IPC_CREAT | IPC_EXCL | 0666);
     if (sem_id == -1)
     {
@@ -84,7 +97,7 @@ int create_sem()
 
 int open_sem()
 {
-    key_t key = get_key();
+    key_t key = get_key_sem();
     int sem_id = ::semget(key, 1, 0666);
     while (sem_id == -1)
     {

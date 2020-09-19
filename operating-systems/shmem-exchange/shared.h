@@ -11,8 +11,6 @@
 using pri_t = int;
 using byte_t = unsigned char;
 
-key_t get_key();
-
 static constexpr std::size_t SHMEM_SIZE = 1 << 16;
 
 std::string capture_cmd_out(const std::string& cmd);
