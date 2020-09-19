@@ -6,8 +6,6 @@
 #include <cstddef>
 #include <string>
 
-key_t get_key();
-
 constexpr std::size_t MSGSZ = 1024;
 
 using pri_t = int;

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <stdexcept>
 
 std::vector<pri_t> get_priorities()
 {
@@ -45,8 +46,8 @@ void send_priorities(int mq_id, const std::vector<pri_t>& priorities)
     write_data<std::size_t>(priorities.size(), msg1.mtext);
     if (::msgsnd(mq_id, &msg1, sizeof(std::size_t), IPC_NOWAIT) == -1)
     {
-        std::perror("msgsnd error: ");
-        std::exit(3);
+        std::perror("msgsnd error");
+        throw std::runtime_error("msgsnd error");
     }
 
     msgbuf_t msg2;
@@ -56,12 +57,12 @@ void send_priorities(int mq_id, const std::vector<pri_t>& priorities)
 
     if (::msgsnd(mq_id, &msg2, sizeof(pri_t) * priorities.size(), IPC_NOWAIT) == -1)
     {
-        std::perror("msgsnd error: ");
-        std::exit(3);
+        std::perror("msgsnd error");
+        throw std::runtime_error("msgsnd error");
     }
 }
 
-int main()
+int main() try
 {
     std::cout << "CLIENT" << std::endl;
 
@@ -72,8 +73,12 @@ int main()
     if (sizeof(pri_t) * priorities.size() > MSGSZ)
     {
         std::cerr << "Too many processes to fit their PRIs in one message" << std::endl;
-        std::exit(0);
+        return 1;
     }
 
     send_priorities(mq_id, priorities);
+}
+catch (const std::exception& e)
+{
+    std::cerr << e.what() << std::endl;
 }

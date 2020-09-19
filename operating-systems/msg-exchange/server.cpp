@@ -21,6 +21,7 @@
 #include <sstream>
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 
 #include <sys/msg.h>
 
@@ -29,16 +30,16 @@ std::vector<pri_t> rcv_priorities(int mq_id)
     msgbuf_t msg1;
     if (::msgrcv(mq_id, &msg1, sizeof(std::size_t), 1, 0) == -1)
     {
-        std::perror("msgrcv error: ");
-        std::exit(3);
+        std::perror("msgrcv error");
+        throw std::runtime_error("msgrcv error");
     }
     std::size_t priorities_count = read_data<std::size_t>(msg1.mtext);
 
     msgbuf_t msg2;
     if (::msgrcv(mq_id, &msg2, priorities_count * sizeof(pri_t), 2, 0) == -1)
     {
-        std::perror("msgrcv error: ");
-        std::exit(3);
+        std::perror("msgrcv error");
+        throw std::runtime_error("msgrcv error");
     }
     std::vector<pri_t> priorities;
     for (std::size_t i = 0; i < priorities_count; ++i)
@@ -90,8 +91,8 @@ void print_last_msg_time(int mq_id)
     msqid_ds mq_struct;
     if (::msgctl(mq_id, IPC_STAT, &mq_struct) == -1)
     {
-        std::perror("msgctl get info error: ");
-        std::exit(4);
+        std::perror("msgctl get info error");
+        throw std::runtime_error("msgctl get info error");
     }
     std::time_t unix_time = mq_struct.msg_stime;
     std::cout << "Last msgsnd time: " << std::put_time(std::localtime(&unix_time), "%c %Z") << std::endl;
@@ -101,12 +102,12 @@ void delete_mq(int mq_id)
 {
     if (::msgctl(mq_id, IPC_RMID, nullptr) == -1)
     {
-        std::perror("msgctl delete mq error: ");
-        std::exit(5);
+        std::perror("msgctl delete mq error");
+        throw std::runtime_error("msgctl delete mq error");
     }
 }
 
-int main()
+int main() try
 {
     std::cout << "SERVER" << std::endl;
 
@@ -121,4 +122,8 @@ int main()
     print_last_msg_time(mq_id);
 
     delete_mq(mq_id);
+}
+catch (const std::exception& e)
+{
+    std::cerr << e.what() << std::endl;
 }

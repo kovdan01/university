@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <stdexcept>
 
 constexpr int PROJECT_ID = 8888;
 const std::string PATH = "/tmp/lab_mq";
@@ -17,8 +18,8 @@ key_t get_key()
     key_t key = ::ftok(PATH.c_str(), PROJECT_ID);
     if (key == -1)
     {
-        std::perror("Cannot get a key with ftok: ");
-        ::exit(1);
+        std::perror("Cannot get a key with ftok");
+        throw std::runtime_error("Cannot get a key with ftok");
     }
     return key;
 }
@@ -48,8 +49,8 @@ int create_or_open_mq()
     int mq_id = ::msgget(key, IPC_CREAT | 0666);
     if (mq_id == -1)
     {
-        std::perror("MQ creation or open error: ");
-        std::exit(2);
+        std::perror("MQ creation or open error");
+        throw std::runtime_error("MQ creation or open error");
     }
 
     return mq_id;
