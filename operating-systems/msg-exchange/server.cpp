@@ -107,21 +107,38 @@ void delete_mq(int mq_id)
     }
 }
 
+struct MessageQueue
+{
+    MessageQueue() : id(create_or_open_mq()) {}
+
+    ~MessageQueue()
+    {
+        try
+        {
+            delete_mq(id);
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    const int id;
+};
+
 int main() try
 {
     std::cout << "SERVER" << std::endl;
 
-    int mq_id = create_or_open_mq();
+    MessageQueue mq;
 
-    std::vector<pri_t> priorities = rcv_priorities(mq_id);
+    std::vector<pri_t> priorities = rcv_priorities(mq.id);
 
     std::sort(priorities.begin(), priorities.end());
     pri_t max_pri = priorities.front();
     print_max_pri_info(max_pri);
 
-    print_last_msg_time(mq_id);
-
-    delete_mq(mq_id);
+    print_last_msg_time(mq.id);
 }
 catch (const std::exception& e)
 {

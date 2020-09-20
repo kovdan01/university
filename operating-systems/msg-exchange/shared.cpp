@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <fcntl.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -14,7 +15,7 @@ const std::string PATH = "/tmp/lab_mq";
 
 key_t get_key()
 {
-    std::system(("touch " + PATH).c_str());
+    ::creat(PATH.c_str(), 0600);
     key_t key = ::ftok(PATH.c_str(), PROJECT_ID);
     if (key == -1)
     {
