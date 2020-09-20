@@ -16,7 +16,7 @@ static constexpr std::size_t SHMEM_SIZE = 1 << 16;
 std::string capture_cmd_out(const std::string& cmd);
 
 template <typename T>
-T read_data(const unsigned char* from)
+T read_data(const byte_t* from)
 {
     T ans = 0;
     for (std::size_t shift = 0; shift != sizeof(T) * 8; shift += 8, ++from)
@@ -25,7 +25,7 @@ T read_data(const unsigned char* from)
 }
 
 template <typename T>
-void write_data(T what, unsigned char* where)
+void write_data(T what, byte_t* where)
 {
     T mask = 0xff;
     for (std::size_t shift = 0; shift != sizeof(T) * 8; mask <<= 8, ++where, shift += 8)
