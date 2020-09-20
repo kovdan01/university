@@ -1,6 +1,6 @@
 .globl mywrite
 
-.section .text
+.text
 
 mywrite:
     mov $1, %rax // 1 <-> write

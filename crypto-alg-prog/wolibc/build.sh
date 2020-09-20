@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -nostdlib -fno-stack-protector start.S -o wolibc mywrite.S main.cpp
+clang++ -nostdlib -fno-stack-check -fno-stack-protector start.S -o wolibc mywrite.S main.cpp
