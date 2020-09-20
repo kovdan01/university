@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -nostdlib -no-pie start.S -o wolibc mywrite.S main.cpp
+g++ -nostdlib -fno-stack-protector start.S -o wolibc mywrite.S main.cpp
