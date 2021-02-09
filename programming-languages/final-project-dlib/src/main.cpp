@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]) try
 {
-    using color_reducer::color_reducer;
+    using color_reducer::ColorReducer;
     namespace po = boost::program_options;
 
     std::string ifile, ofile, output_file_type;
@@ -12,21 +12,21 @@ int main(int argc, char* argv[]) try
     bool pick_initial_centers, resize_before_filter;
     po::options_description desc("Allowed options");
     desc.add_options()
-            // First parameter describes option name/short name
-            // The second is parameter to option
-            // The third is description
-            ("help,H", "Print this message")
-            ("input,I", po::value<std::string>()->required(), "Input filename")
-            ("output,O", po::value<std::string>()->required(), "Output filename")
-            ("output_file_type,T", po::value<std::string>()->required(), "Output file type (etiher png, jpeg (jpg) or bmp)")
-            ("n_clusters,N", po::value<unsigned int>()->required(), "Number of colors in output image")
-            ("n_iterations", po::value<unsigned int>()->default_value(100), "Number of iterations in clustering algorithm")
-            ("resize_before_filter", po::bool_switch()->default_value(true),
-             "Resize image to area_after_resize pixels to increase perfomance")
-            ("area_after_resize", po::value<unsigned int>()->default_value(10000), "Number of pixels in image after resize")
-            ("pick_initial_centers", po::bool_switch()->default_value(true),
-             "Try to find a set of points that are all far away from each other")
-            ;
+        // First parameter describes option name/short name
+        // The second is parameter to option
+        // The third is description
+        ("help,H", "Print this message")
+        ("input,I", po::value<std::string>()->required(), "Input filename")
+        ("output,O", po::value<std::string>()->required(), "Output filename")
+        ("output_file_type,T", po::value<std::string>()->required(), "Output file type (etiher png, jpeg (jpg) or bmp)")
+        ("n_clusters,N", po::value<unsigned int>()->required(), "Number of colors in output image")
+        ("n_iterations", po::value<unsigned int>()->default_value(100), "Number of iterations in clustering algorithm")
+        ("resize_before_filter", po::bool_switch()->default_value(true),
+         "Resize image to area_after_resize pixels to increase perfomance")
+        ("area_after_resize", po::value<unsigned int>()->default_value(10000), "Number of pixels in image after resize")
+        ("pick_initial_centers", po::bool_switch()->default_value(true),
+         "Try to find a set of points that are all far away from each other")
+        ;
 
     po::variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
@@ -49,14 +49,16 @@ int main(int argc, char* argv[]) try
         std::cerr << "Output file type must be etiher png, jpeg (jpg) or bmp\n";
         return 1;
     }
-    color_reducer filter(ifile, n_clusters, n_iterations, pick_initial_centers, resize_before_filter, area_after_resize);
+
+    ColorReducer filter(ifile, n_clusters, n_iterations, pick_initial_centers, resize_before_filter, area_after_resize);
     filter.fit_filter();
+
     if (output_file_type == "png")
-        filter.save_result(ofile, color_reducer::image_type::png);
+        filter.save_result(ofile, ColorReducer::ImageType::PNG);
     else if (output_file_type == "bmp")
-        filter.save_result(ofile, color_reducer::image_type::bmp);
+        filter.save_result(ofile, ColorReducer::ImageType::BMP);
     else
-        filter.save_result(ofile, color_reducer::image_type::jpeg);
+        filter.save_result(ofile, ColorReducer::ImageType::JPEG);
 }
 catch(std::exception& e)
 {
