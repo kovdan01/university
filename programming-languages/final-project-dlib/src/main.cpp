@@ -29,13 +29,23 @@ int main(int argc, char* argv[]) try
         ;
 
     po::variables_map vm;
-    store(parse_command_line(argc, argv, desc), vm);
-    notify(vm);
-    if (vm.count("help"))
+    try
     {
-        std::cout << desc << "\n";
-        return 0;
+        po::store(parse_command_line(argc, argv, desc), vm);
+        if (vm.count("help") != 0)
+        {
+            std::cout << desc << "\n";
+            return 0;
+        }
+        po::notify(vm);
     }
+    catch (const po::error& error)
+    {
+        std::cerr << "Error while parsing command-line arguments: "
+                  << error.what() << "\nPlease use --help to see help message\n";
+        return 1;
+    }
+
     ifile = vm["input"].as<std::string>();
     ofile = vm["output"].as<std::string>();
     n_clusters = vm["n_clusters"].as<unsigned int>();
@@ -60,7 +70,7 @@ int main(int argc, char* argv[]) try
     else
         filter.save_result(ofile, ColorReducer::ImageType::JPEG);
 }
-catch(std::exception& e)
+catch (std::exception& e)
 {
     std::cerr << e.what() << '\n';
 }
