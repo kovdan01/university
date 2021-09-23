@@ -260,6 +260,11 @@ int main(int argc, char* argv[]) try
         };
         if (result == 0)
         {
+            if (username.size() < 6)
+            {
+                obfuscate_print_string(string_fail);
+                return 1;
+            }
             if (check_password() == 0)
             {
                 obfuscate_print_string(string_congratulations);
@@ -273,7 +278,7 @@ int main(int argc, char* argv[]) try
         }
         if (result != 0)
         {
-            if (check_password() != 0)
+            if (username.size() < 6 || check_password() != 0)
             {
                 obfuscate_print_string(string_fail);
                 return 1;
