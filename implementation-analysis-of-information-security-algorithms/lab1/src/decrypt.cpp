@@ -266,8 +266,18 @@ int main(int argc, char* argv[]) try
 {
     CommandLineParameters parameters = process_command_line_parameters(argc, argv);
     std::vector<byte_t> data = read_from_file(parameters.input_filename);
-    process_data(data, DECRYPTION_TABLE);
-    store_to_file(parameters.output_filename, data);
+    if (data.empty())
+    {
+        throw std::invalid_argument("Error: the input file is empty!");
+    }
+    std::span<byte_t> ciphertext{ data.data(), data.data() + data.size() - 1 };
+    byte_t checksum = calculate_checksum(ciphertext);
+    if (checksum != data.back())
+    {
+        throw std::invalid_argument("Error: checksum doesn't match! Won't decrypt.");
+    }
+    process_data(ciphertext, DECRYPTION_TABLE);
+    store_to_file(parameters.output_filename, ciphertext);
     std::cout << "File decrypted!\n";
 }
 catch (const std::exception& e)

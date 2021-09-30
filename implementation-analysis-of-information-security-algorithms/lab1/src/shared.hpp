@@ -1,6 +1,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <span>
 #include <vector>
 
 static constexpr std::size_t PERIOD_SIZE = 16;
@@ -18,6 +19,8 @@ CommandLineParameters process_command_line_parameters(int argc, char* argv[]);
 
 std::vector<byte_t> read_from_file(std::filesystem::path filename);
 
-void store_to_file(std::filesystem::path filename, const std::vector<byte_t>& contents);
+void store_to_file(std::filesystem::path filename, std::span<const byte_t> contents);
 
-void process_data(std::vector<byte_t>& data, const table_t& table);
+void process_data(std::span<byte_t> data, const table_t& table);
+
+byte_t calculate_checksum(std::span<const byte_t> data);

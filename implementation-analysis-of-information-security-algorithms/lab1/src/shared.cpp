@@ -30,16 +30,26 @@ std::vector<byte_t> read_from_file(std::filesystem::path filename)
     return contents;
 }
 
-void store_to_file(std::filesystem::path filename, const std::vector<byte_t>& contents)
+void store_to_file(std::filesystem::path filename, std::span<const byte_t> contents)
 {
     std::ofstream file(filename, std::ios_base::out | std::ios_base::binary);
     file.write(reinterpret_cast<const char*>(contents.data()), contents.size());
 }
 
-void process_data(std::vector<byte_t>& data, const table_t& table)
+void process_data(std::span<byte_t> data, const table_t& table)
 {
     for (std::size_t i = 0; i < data.size(); ++i)
     {
         data[i] = table[data[i]][i % PERIOD_SIZE];
     }
+}
+
+byte_t calculate_checksum(std::span<const byte_t> data)
+{
+    byte_t checksum = 0;
+    for (byte_t byte : data)
+    {
+        checksum ^= byte;
+    }
+    return checksum;
 }

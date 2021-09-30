@@ -267,6 +267,7 @@ int main(int argc, char* argv[]) try
     CommandLineParameters parameters = process_command_line_parameters(argc, argv);
     std::vector<byte_t> data = read_from_file(parameters.input_filename);
     process_data(data, ENCRYPTION_TABLE);
+    data.emplace_back(calculate_checksum(data));
     store_to_file(parameters.output_filename, data);
     std::cout << "File encrypted!\n";
 }
