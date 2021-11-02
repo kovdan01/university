@@ -2,8 +2,8 @@
 
 ## Given
 
-Scalar operation is multiplication of two 64-bit signed integers
-Vector operation is `_mm256_div_epi64` from AVX2 extension (not available as intrinsic with regular gcc or clang, defined in libsvml, which is installed among with Intel ICC compiler)
+Scalar operation is division of two 64-bit signed integers
+Vector operation is `_mm256_div_epi64` from AVX2 extension (not available as intrinsic with regular gcc or clang, defined in libsvml, which is installed among with Intel ICC compiler). Performs four 64-bit signed integer divisions as one operation.
 
 ## How to build
 
