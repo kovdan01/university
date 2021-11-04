@@ -42,7 +42,7 @@ CPU used: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
 
 ### Given
 
-Function to integrate is
+Function to integrate is (math is rendered with black font on transparent background, please use light theme)
 
 <img src="https://render.githubusercontent.com/render/math?math=f(x)=\exp{\left(\sin{x^\pi}\right)}">
 
@@ -54,8 +54,8 @@ CPU used: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
 +--------------------+----------------+---------------+
 |      operation     |  ticks / iter  |   ns / iter   |
 +--------------------+----------------+---------------+
-|  integrate dummy   |  47788837.6843 |  21653011.522 |
+|  integrate dummy   |    48442615.56 |   21949731.68 |
 +--------------------+----------------+---------------+
-|   integrate omp    |  14308301.9407 |  6491968.9558 |
+|   integrate omp    |    14389616.44 |    6529158.31 |
 +--------------------+----------------+---------------+
 ```
