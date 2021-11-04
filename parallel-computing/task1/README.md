@@ -42,7 +42,9 @@ CPU used: Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
 
 ### Given
 
-Function to integrate is $f(x)=\exp{\sin{x^\pi}}$
+Function to integrate is
+
+<img src="https://render.githubusercontent.com/render/math?math=f(x)=\exp{\left(\sin{x^\pi}\right)}">
 
 ### Results
 
