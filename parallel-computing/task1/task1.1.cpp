@@ -16,7 +16,7 @@ static_assert (sizeof(long long) == sizeof(std::int64_t), "long long and std::in
 static_assert (sizeof(__m256i) % sizeof(std::int64_t) == 0, "Size of __m256i is not multiple of size of std::int64_t");
 static constexpr std::size_t SCALARS_IN_VECTOR = sizeof(__m256i) / sizeof(std::int64_t);
 
-static constexpr std::size_t ITERATIONS_COUNT = 10'000'000'000;
+static constexpr std::size_t ITERATIONS_COUNT = 100'000'000'000;
 
 my::BenchmarkResult independent_scalar_operation(std::int64_t n1, std::int64_t n2)
 {
