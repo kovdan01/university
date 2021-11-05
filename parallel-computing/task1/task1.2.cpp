@@ -81,7 +81,7 @@ void print_table_row(std::string_view label, my::BenchmarkResult result)
 {
     std::cout << "| " << label << " | "
               << std::setw(14) << std::setprecision(2) << std::fixed << result.ticks << " | "
-              << std::setw(13)  << std::setprecision(2) << std::fixed << result.nanoseconds << " |" << std::endl
+              << std::setw(13) << std::setprecision(2) << std::fixed << result.nanoseconds << " |" << std::endl
               << "+--------------------------+----------------+---------------+" << std::endl;
 }
 
