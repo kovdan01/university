@@ -5,7 +5,7 @@ project(task1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(tools tools.cpp tools.hpp)
+add_library(tools INTERFACE tools.hpp)
 
 option(BUILD_TASK_1_1 "Build task 1.1 (requires Intel compiler)" ON)
 option(BUILD_TASK_1_2 "Build task 1.2 (requires OpenMP)"         ON)
