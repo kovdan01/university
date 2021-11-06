@@ -1,5 +1,7 @@
 #include "tools.hpp"
 
+#include <omp.h>
+
 #include <cmath>
 #include <functional>
 #include <iomanip>
@@ -26,10 +28,11 @@ double integrate_dummy(const function_values_table_t& table, double dx)
     return sum;
 }
 
-double integrate_omp_parallel(const function_values_table_t& table, double dx)
+double integrate_omp_parallel(const function_values_table_t& table, double dx, int thread_count)
 {
     asm volatile("# integrate_omp_parallel enter");
     double sum = 0;
+    omp_set_num_threads(thread_count);
     #pragma omp parallel for reduction(+ : sum)
     for (std::size_t i = 0; i != table.size(); ++i)
     {
@@ -43,7 +46,7 @@ double integrate_omp_simd(const function_values_table_t& table, double dx)
 {
     asm volatile("# integrate_omp_simd enter");
     double sum = 0;
-    #pragma omp simd reduction(+:sum)
+    #pragma omp simd reduction(+ : sum)
     for (std::size_t i = 0; i != table.size(); ++i)
     {
         sum += dx * table[i];
@@ -59,7 +62,7 @@ double arithmetic_function(double x)
 
 my::BenchmarkResult measure_integrate(integrate_function_t integrate, const function_values_table_t& table, double dx)
 {
-    static constexpr std::size_t ITERATIONS_COUNT = 10'000'000;
+    static constexpr std::size_t ITERATIONS_COUNT = 10'000;
     std::vector<my::BenchmarkResult> results(ITERATIONS_COUNT);
     for (my::BenchmarkResult& result : results)
     {
@@ -82,7 +85,7 @@ void print_table_row(std::string_view label, my::BenchmarkResult result)
     std::cout << "| " << label << " | "
               << std::setw(14) << std::setprecision(2) << std::fixed << result.ticks << " | "
               << std::setw(13) << std::setprecision(2) << std::fixed << result.nanoseconds << " |" << std::endl
-              << "+--------------------------+----------------+---------------+" << std::endl;
+              << "+----------------------------+----------------+---------------+" << std::endl;
 }
 
 std::vector<double> generate_function_values_table(arithmetic_function_t f, double from, double to, double dx)
@@ -98,19 +101,36 @@ std::vector<double> generate_function_values_table(arithmetic_function_t f, doub
 
 int main() try
 {
-    double dx = 0.0001;
+    double dx = 0.00001;
     function_values_table_t table = generate_function_values_table(arithmetic_function, -43.54325, 34.6354, dx);
 
     my::BenchmarkResult integrate_dummy_result = measure_integrate(integrate_dummy, table, dx);
-    my::BenchmarkResult integrate_omp_parallel_result = measure_integrate(integrate_omp_parallel, table, dx);
     my::BenchmarkResult integrate_omp_simd_result = measure_integrate(integrate_omp_simd, table, dx);
 
-    std::cout << "+--------------------------+----------------+---------------+" << std::endl
-              << "|         operation        |  ticks / iter  |   ns / iter   |" << std::endl
-              << "+--------------------------+----------------+---------------+" << std::endl;
-    print_table_row("    integrate dummy     ", integrate_dummy_result);
-    print_table_row(" integrate omp parallel ", integrate_omp_parallel_result);
-    print_table_row("   integrate omp simd   ", integrate_omp_simd_result);
+    int max_thread_count = omp_get_max_threads();
+    if (max_thread_count <= 0)
+    {
+        throw std::runtime_error("omp_get_max_threads returned " + std::to_string(max_thread_count));
+    }
+
+    std::vector<my::BenchmarkResult> integrate_omp_parallel_results(max_thread_count);
+    for (int thread_count = 1; thread_count <= max_thread_count; ++thread_count)
+    {
+        using namespace std::placeholders;
+        integrate_omp_parallel_results[thread_count - 1] = measure_integrate(std::bind(integrate_omp_parallel, _1, _2, thread_count), table, dx);
+    }
+
+    std::cout << "+----------------------------+----------------+---------------+" << std::endl
+              << "|          operation         |  ticks / iter  |   ns / iter   |" << std::endl
+              << "+----------------------------+----------------+---------------+" << std::endl;
+
+    print_table_row("     integrate dummy      ", integrate_dummy_result);
+    print_table_row("    integrate omp simd    ", integrate_omp_simd_result);
+
+    for (int thread_count = 1; thread_count <= max_thread_count; ++thread_count)
+    {
+        print_table_row(" integrate omp parallel " + std::to_string(thread_count) + " ", integrate_omp_parallel_results[thread_count - 1]);
+    }
 
     return EXIT_SUCCESS;
 }
