@@ -10,18 +10,15 @@
 
 int main(int argc, const char* argv[]) try
 {
-    if (argc < 2)
-        throw std::runtime_error("Error! Format: ./attacker taskX <task-specific-options>");
+    if (argc != 4)
+        throw std::runtime_error("Error! Format: ./attacker task9 <defender_ip> <malware or legal>");
 
     std::string_view task = argv[1];
+    std::string_view defender_ip = argv[2];
+    std::string_view content_type = argv[3];
+
     if (task == "task9")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task9 <defender_ip> <malware or legal>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal")
             throw std::runtime_error("Error! Last argument must be either malware or legal.");
 
@@ -44,12 +41,6 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task11")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task11 <defender_ip> <malware or legal>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal")
             throw std::runtime_error("Error! Last argument must be either malware or legal.");
 
@@ -71,12 +62,6 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task12")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task12 <defender_ip> <malware or legal>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal")
             throw std::runtime_error("Error! Last argument must be either malware or legal.");
 
@@ -98,12 +83,6 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task13")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task13 <defender_ip> <malware or legal>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal")
             throw std::runtime_error("Error! Last argument must be either malware or legal.");
 
@@ -125,17 +104,11 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task14")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task14 <defender_ip> <malware or legal1 or legal2>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal1" && content_type != "legal2")
             throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2.");
 
         TcpSocket defender_sock;
-        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1234);
+        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1414);
         connect_wrapper(defender_sock.sfd, defender_addr);
 
         if (content_type == "malware")
@@ -169,12 +142,6 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task15")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task15 <defender_ip> <malware or legal1 or legal2>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal1" && content_type != "legal2")
             throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2.");
 
@@ -206,9 +173,9 @@ int main(int argc, const char* argv[]) try
         else
         {
             assert(content_type == "legal2");
-            std::array<char, 24> malware_buf = { 'L',    'O', 'C', 'A', 'T', 'I', 'O', 'N',
-                                                 '\x3a', 'x', 'x', 'x', 'N', 'O', 'T', 'I',
-                                                 'F',    'Y', ' ', '*', ' ', 'a', 'a', 'a'};
+            std::array<char, 24> malware_buf = { 'N', 'O', 'T', 'I', 'F',    'Y', ' ', '*',
+                                                 ' ', 'x', 'x', 'x', 'L',    'O', 'C', 'A',
+                                                 'T', 'I', 'O', 'N', '\x3b', 'a', 'a', 'a' };
             for (int i = 0; i < 11; ++i)
             {
                 ::sendto(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0,
@@ -218,17 +185,11 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task16")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task16 <defender_ip> <malware or legal1 or legal2>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal1" && content_type != "legal2")
             throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2.");
 
         TcpSocket defender_sock;
-        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1234);
+        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1616);
         connect_wrapper(defender_sock.sfd, defender_addr);
 
         if (content_type == "malware")
@@ -277,17 +238,11 @@ int main(int argc, const char* argv[]) try
     }
     else if (task == "task17")
     {
-        if (argc != 4)
-            throw std::runtime_error("Error! Format: ./attacker task17 <defender_ip> <malware or legal1 or legal2 or legal3>");
-
-        std::string_view defender_ip = argv[2];
-        std::string_view content_type = argv[3];
-
         if (content_type != "malware" && content_type != "legal1" && content_type != "legal2" && content_type != "legal3")
             throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2 or legal3.");
 
         TcpSocket defender_sock;
-        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1234);
+        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1717);
         connect_wrapper(defender_sock.sfd, defender_addr);
 
         if (content_type == "malware")
