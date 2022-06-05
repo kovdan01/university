@@ -17,7 +17,119 @@ int main(int argc, const char* argv[]) try
     std::string_view defender_ip = argv[2];
     std::string_view content_type = argv[3];
 
-    if (task == "task9")
+    if (task == "task7")
+    {
+        if (content_type != "malware" && content_type != "legal1" && content_type != "legal2")
+            throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2.");
+
+        TcpSocket defender_sock;
+        sockaddr_in defender_addr = get_addr_impl(defender_ip, 7777);
+        connect_wrapper(defender_sock.sfd, defender_addr);
+
+        if (content_type == "malware")
+        {
+            std::array<char, 80> malware_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
+                                                 'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
+                                                 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                                                 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                                                 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
+                                                 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                                                 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                                                 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                                                 'u', 's', 'e', 'r', '0', '1', '2', '3',
+                                                 '4', '5', '6', '7', '8', '9', '.', '.'};
+            ::send(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0);
+        }
+        else if (content_type == "legal1")
+        {
+            std::array<char, 80> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
+                                               'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
+                                               'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                                               'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                                               't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
+                                               'B', 'C', 'u', 's', 'e', 'r', 'H', 'I',
+                                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                                               'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                                               'Z', 's', 'e', 'r', '0', '1', '2', '3',
+                                               '4', '5', '6', '7', '8', '9', '.', '.'};
+            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
+        }
+        else
+        {
+            assert(content_type == "legal2");
+            std::array<char, 80> legal_buf = { '.', '.', 'i', 'n', 's', 't', 'a', 'l',
+                                               'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
+                                               'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+                                               'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                                               't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
+                                               'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+                                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                                               'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
+                                               'u', 's', 'e', 'r', '0', '1', '2', '3',
+                                               '4', '5', '6', '7', '8', '9', '.', '.'};
+            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
+        }
+    }
+    else if (task == "task8")
+    {
+        if (content_type != "malware" && content_type != "legal1" && content_type != "legal2" && content_type != "legal3")
+            throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2 or legal3.");
+
+        TcpSocket defender_sock;
+        sockaddr_in defender_addr = get_addr_impl(defender_ip, 8888);
+        connect_wrapper(defender_sock.sfd, defender_addr);
+
+        if (content_type == "malware")
+        {
+            std::array<char, 64> malware_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
+                                                 'l', '.', 'e', 'x', 'e', '3', 'A', '0',
+                                                 '1', 'F', '2', '3', '1', 'C', 'A', 'F',
+                                                 '8', 'B', 'C', '9', '3', 'F', 'F', '9',
+                                                 '1', '6', 'B', 'B', '3', 'C', 'A', '9',
+                                                 'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
+                                                 'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
+                                                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
+            ::send(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0);
+        }
+        else if (content_type == "legal1")
+        {
+            std::array<char, 64> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
+                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
+                                               '1', 'F', '2', '3', '1', 'C', 'A', 'F',
+                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
+                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
+                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
+                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a' };
+            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
+        }
+        else if (content_type == "legal2")
+        {
+            std::array<char, 64> legal_buf = { '.', '.', 'i', 'n', 's', 't', 'a', 'l',
+                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
+                                               '1', 'F', '2', '3', '1', 'C', 'A', 'F',
+                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
+                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
+                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
+                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
+                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
+            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
+        }
+        else
+        {
+            assert(content_type == "legal3");
+            std::array<char, 64> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
+                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
+                                               '1', 'F', '2', '3', '1', 'X', 'A', 'F',
+                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
+                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
+                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
+                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
+                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
+            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
+        }
+    }
+    else if (task == "task9")
     {
         if (content_type != "malware" && content_type != "legal")
             throw std::runtime_error("Error! Last argument must be either malware or legal.");
@@ -181,118 +293,6 @@ int main(int argc, const char* argv[]) try
                 ::sendto(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0,
                          reinterpret_cast<struct sockaddr*>(&defender_addr), sizeof(defender_addr));
             }
-        }
-    }
-    else if (task == "task16")
-    {
-        if (content_type != "malware" && content_type != "legal1" && content_type != "legal2")
-            throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2.");
-
-        TcpSocket defender_sock;
-        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1616);
-        connect_wrapper(defender_sock.sfd, defender_addr);
-
-        if (content_type == "malware")
-        {
-            std::array<char, 80> malware_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
-                                                 'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
-                                                 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-                                                 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-                                                 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
-                                                 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                                                 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-                                                 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-                                                 'u', 's', 'e', 'r', '0', '1', '2', '3',
-                                                 '4', '5', '6', '7', '8', '9', '.', '.'};
-            ::send(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0);
-        }
-        else if (content_type == "legal1")
-        {
-            std::array<char, 80> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
-                                               'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
-                                               'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-                                               'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-                                               't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
-                                               'B', 'C', 'u', 's', 'e', 'r', 'H', 'I',
-                                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-                                               'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-                                               'Z', 's', 'e', 'r', '0', '1', '2', '3',
-                                               '4', '5', '6', '7', '8', '9', '.', '.'};
-            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
-        }
-        else
-        {
-            assert(content_type == "legal2");
-            std::array<char, 80> legal_buf = { '.', '.', 'i', 'n', 's', 't', 'a', 'l',
-                                               'l', '.', 'e', 'x', 'e', 'a', 'b', 'c',
-                                               'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-                                               'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-                                               't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
-                                               'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-                                               'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-                                               'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-                                               'u', 's', 'e', 'r', '0', '1', '2', '3',
-                                               '4', '5', '6', '7', '8', '9', '.', '.'};
-            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
-        }
-    }
-    else if (task == "task17")
-    {
-        if (content_type != "malware" && content_type != "legal1" && content_type != "legal2" && content_type != "legal3")
-            throw std::runtime_error("Error! Last argument must be either malware or legal1 or legal2 or legal3.");
-
-        TcpSocket defender_sock;
-        sockaddr_in defender_addr = get_addr_impl(defender_ip, 1717);
-        connect_wrapper(defender_sock.sfd, defender_addr);
-
-        if (content_type == "malware")
-        {
-            std::array<char, 64> malware_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
-                                                 'l', '.', 'e', 'x', 'e', '3', 'A', '0',
-                                                 '1', 'F', '2', '3', '1', 'C', 'A', 'F',
-                                                 '8', 'B', 'C', '9', '3', 'F', 'F', '9',
-                                                 '1', '6', 'B', 'B', '3', 'C', 'A', '9',
-                                                 'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
-                                                 'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
-                                                 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
-            ::send(defender_sock.sfd, malware_buf.data(), malware_buf.size(), 0);
-        }
-        else if (content_type == "legal1")
-        {
-            std::array<char, 64> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
-                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
-                                               '1', 'F', '2', '3', '1', 'C', 'A', 'F',
-                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
-                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
-                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
-                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
-                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a' };
-            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
-        }
-        else if (content_type == "legal2")
-        {
-            std::array<char, 64> legal_buf = { '.', '.', 'i', 'n', 's', 't', 'a', 'l',
-                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
-                                               '1', 'F', '2', '3', '1', 'C', 'A', 'F',
-                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
-                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
-                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
-                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
-                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
-            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
-        }
-        else
-        {
-            assert(content_type == "legal3");
-            std::array<char, 64> legal_buf = { '.', '/', 'i', 'n', 's', 't', 'a', 'l',
-                                               'l', '.', 'e', 'x', 'e', '3', 'A', '0',
-                                               '1', 'F', '2', '3', '1', 'X', 'A', 'F',
-                                               '8', 'B', 'C', '9', '3', 'F', 'F', '9',
-                                               '1', '6', 'B', 'B', '3', 'C', 'A', '9',
-                                               'B', 'D', '0', 'B', 'E', 'a', 'a', 'a',
-                                               'a', 'u', 's', 'e', 'r', 'a', 'a', 'a',
-                                               'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a' };
-            ::send(defender_sock.sfd, legal_buf.data(), legal_buf.size(), 0);
         }
     }
     else

@@ -48,7 +48,11 @@ int main(int argc, const char* argv[]) try
         throw std::runtime_error("Error! Format: ./defender taskX");
 
     std::string_view task = argv[1];
-    if (task == "task9")
+    if (task == "task7")
+        listen_for_tcp_packets(7777);
+    else if (task == "task8")
+        listen_for_tcp_packets(8888);
+    else if (task == "task9")
         listen_for_udp_datagrams<8>(4120);
     else if (task == "task11")
         listen_for_tcp_packets(6000);
@@ -60,10 +64,6 @@ int main(int argc, const char* argv[]) try
         listen_for_tcp_packets(1414);
     else if (task == "task15")
         listen_for_udp_datagrams<24>(1900);
-    else if (task == "task16")
-        listen_for_tcp_packets(1616);
-    else if (task == "task17")
-        listen_for_tcp_packets(1717);
     else
         throw std::runtime_error("Error! Task " + std::string(task) + " is not a valid task name.");
 
